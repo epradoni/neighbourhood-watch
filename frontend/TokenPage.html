@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Neighbourhood Watch Token</title>
+    <link href="style.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #222;
+            color: white;
+            padding: 10px 20px;
+        }
+        
+        .wallet-info {
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+        
+        .wallet-info span {
+            margin-bottom: 2px;
+        }
+        
+        .hero {
+            padding: 20px;
+            text-align: center;
+            background-color: #f1f1f1;
+        }
+        
+        .hero h2 {
+            margin: 10px 0;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 30px 0;
+            gap: 20px;
+        }
+        
+        .action-buttons button {
+            font-size: 18px;
+            padding: 15px 30px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .action-buttons button:hover {
+            background-color: #0056b3;
+        }
+        
+        .voucher-section {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .voucher-section h2 {
+            margin-bottom: 20px;
+        }
+        
+        .voucher-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .voucher {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .voucher h3 {
+            margin: 0 0 10px;
+        }
+        
+        .voucher p {
+            margin: 0 0 10px;
+        }
+        
+        .voucher button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .voucher button:hover {
+            background-color: #1c7e31;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="wallet-info">
+            <span><strong>Address:</strong> <span id="userAddress">Not connected</span></span>
+            <span><strong>Balance:</strong> <span id="userBalance">0 NWT</span></span>
+        </div>
+        <div>
+            <a href="index.html "><button>Home</button></a>
+            <button id="connectWallet ">Connect Wallet</button>
+        </div>
+    </div>
+
+    <!-- Hero message -->
+    <div class="hero ">
+        <h1>Neighbourhood Watch Token (NWT)</h1>
+        <h2>Get rewarded with NWT tokens for reporting a problem or verifying reports in your neighbourhood.</h2>
+    </div>
+
+    <!-- Main Action Buttons -->
+    <div class="action-buttons ">
+        <a href="report.html "><button id="reportProblemBtn ">Click here to report a problem</button></a>
+        <a href="verify.html "><button id="verifyReportBtn ">Click here to earn tokens for verifying reports</button></a>
+    </div>
+
+    <!-- Spend Tokens Section -->
+    <div class="voucher-section ">
+        <h2>Spend Your Tokens</h2>
+        <div class="voucher-grid ">
+            <div class="voucher ">
+                <h3>Digicel Voucher</h3>
+                <p>5 cG = 10 NWT</p>
+                <button id="take">Buy</button>
+            </div>
+            <div class="voucher ">
+                <h3>Chippie Voucher</h3>
+                <p>10 cG = 400 NWT</p>
+                <button>Buy</button>
+            </div>
+            <div class="voucher ">
+                <h3>Pagatinu Voucher</h3>
+                <p>15 cG = 6000 NWT</p>
+                <button>Buy</button>
+            </div>
+            <div class="voucher ">
+                <h3>Mangusa Voucher</h3>
+                <p>5 cG = 200 NWT</p>
+                <button>Buy</button>
+            </div>
+            <div class="voucher ">
+                <h3>Cinema Voucher</h3>
+                <p>10 cG = 400 NWT</p>
+                <button>Buy</button>
+            </div>
+            <div class="voucher ">
+                <h3>Car Wash Voucher</h3>
+                <p>15 cG = 6000 NWT</p>
+                <button>Buy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        const contractAddress = "0x178d3b8E60F2C299404B56f5E90443eABC01D1B0"; // Copia la dirección aquí
+        const abi = [
+            "function giveMe10() public",
+            "function take10() public"
+        ];
+
+        let contract;
+
+        async function init() {
+            if (!window.ethereum) {
+                alert("Instala MetaMask para usar esta app.");
+                return;
+            }
+
+            await window.ethereum.request({
+                method: "eth_requestAccounts"
+            });
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            contract = new ethers.Contract(contractAddress, abi, signer);
+        }
+
+        document.getElementById("give").onclick = async() => {
+            try {
+                const tx = await contract.giveMe10();
+                await tx.wait();
+                alert("¡Has recibido 10 NWT!");
+            } catch (err) {
+                console.error(err);
+                alert("Error al recibir NWT");
+            }
+        };
+
+        document.getElementById("take").onclick = async() => {
+            try {
+                const tx = await contract.take10();
+                await tx.wait();
+                alert("¡Se han quitado 10 NWT de tu wallet!");
+            } catch (err) {
+                console.error(err);
+                alert("No tienes suficientes NWT o hubo un error.");
+            }
+        };
+
+        init();
+    </script>
+
+    <!-- App logic -->
+    <script type="module " src="app.js "></script>
+    <div>
+
+    </div>
+    <!-- Footer-->
+    <footer class="py-5 bg-black">
+        <div class="container px-5">
+            <p class="m-0 text-center text-white small">Neighbourhood Watch Token 🪙 Made by Hector, Rose & Hoi Ming </p>
+        </div>
+    </footer>
+</body>
+
+</html>

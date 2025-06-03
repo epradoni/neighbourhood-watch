@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Report a Problem - Neighbourhood Watch Token</title>
+    <link href="style.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #222;
+            color: white;
+            padding: 10px 20px;
+        }
+        
+        .wallet-info {
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+        
+        .wallet-info span {
+            margin-bottom: 2px;
+        }
+        
+        .container {
+            padding: 30px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .report-section {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .report-section h2 {
+            margin-top: 0;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            resize: vertical;
+        }
+        
+        button.submit-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        button.submit-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="wallet-info">
+            <span><strong>Address:</strong> <span id="userAddress">Not connected</span></span>
+            <span><strong>Balance:</strong> <span id="userBalance">0 NWT</span></span>
+        </div>
+        <div>
+            <a href="index.html "><button>Home</button></a>
+            <button id="connectWallet">Connect Wallet</button>
+        </div>
+    </div>
+
+    <!-- Report Form -->
+    <div class="container">
+        <div class="report-section">
+            <h2>Graffiti</h2>
+            <textarea id="graffitiText" placeholder="Describe the graffiti location or issue..."></textarea>
+            <button id="give" class="submit-btn" onclick="submitReport('graffitiText')">Submit Report</button>
+        </div>
+
+        <div class="report-section">
+            <h2>Broken Lights</h2>
+            <textarea id="lightsText" placeholder="Describe the broken light location or issue..."></textarea>
+            <button class="submit-btn" onclick="submitReport('lightsText')">Submit Report</button>
+        </div>
+
+        <div class="report-section">
+            <h2>Trash</h2>
+            <textarea id="trashText" placeholder="Describe the trash problem or location..."></textarea>
+            <button class="submit-btn" onclick="submitReport('trashText')">Submit Report</button>
+        </div>
+    </div>
+
+    <!-- Script -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        const contractAddress = "0x178d3b8E60F2C299404B56f5E90443eABC01D1B0"; // Copia la dirección aquí
+        const abi = [
+            "function giveMe10() public",
+            "function take10() public"
+        ];
+
+        let contract;
+
+        async function init() {
+            if (!window.ethereum) {
+                alert("Instala MetaMask para usar esta app.");
+                return;
+            }
+
+            await window.ethereum.request({
+                method: "eth_requestAccounts"
+            });
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            contract = new ethers.Contract(contractAddress, abi, signer);
+        }
+
+        document.getElementById("give").onclick = async() => {
+            try {
+                const tx = await contract.giveMe10();
+                await tx.wait();
+                alert("¡Has recibido 10 NWT!");
+            } catch (err) {
+                console.error(err);
+                alert("Error al recibir NWT");
+            }
+        };
+
+        document.getElementById("take").onclick = async() => {
+            try {
+                const tx = await contract.take10();
+                await tx.wait();
+                alert("¡Se han quitado 10 NWT de tu wallet!");
+            } catch (err) {
+                console.error(err);
+                alert("No tienes suficientes NWT o hubo un error.");
+            }
+        };
+
+        init();
+    </script>
+
+    <!-- Basic JavaScript Logic -->
+    <script type="module" src="app.js"></script>
+    <script>
+        function submitReport(textareaId) {
+            const description = document.getElementById(textareaId).value.trim();
+            if (!description) {
+                alert("Please enter a description before submitting.");
+                return;
+            }
+            // Placeholder: Replace with actual smart contract or backend call
+            alert("Report submitted:\n" + description);
+            document.getElementById(textareaId).value = "";
+        }
+    </script>
+
+    <!-- Footer-->
+    <footer class="py-5 bg-black">
+        <div class="container px-5">
+            <p class="m-0 text-center text-white small">Neighbourhood Watch Token 🪙 Hector, Rose, Hoi Ming </p>
+        </div>
+    </footer>
+</body>
+
+
+
+</html>
